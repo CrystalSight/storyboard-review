@@ -7,7 +7,8 @@
 - **并行执行** - 5 个审查代理同时运行，耗时降低 40-60%
 - **L1 校验** - 字数限制、空单元格检查（Python 脚本）
 - **L2 审查** - 省略性描述、绘图提示词、视频提示词、跨行一致性（AI 执行）
-- **统一报告** - 自动生成结构化审查报告和修正反馈
+- **统一报告** - 自动生成结构化审查报告
+- **独立反馈** - 额外生成 `feedback_for_model.txt` 文件，便于生成模型直接读取修正建议
 
 ## 快速开始
 
@@ -25,8 +26,9 @@ python scripts/parse_table.py --input response.txt --output temp/001/parsed.json
 # 2. 启动 5 个并行子代理（通过 Claude Code skill）
 # 主会话加载 skill 后自动执行
 
-# 3. 汇总审查报告
+# 3. 汇总审查报告（自动包含反馈文件）
 python scripts/merge_reports.py --input-dir temp/001/ --output temp/001/final_review_report.txt
+# 同时自动生成 temp/001/feedback_for_model.txt
 ```
 
 ## 5 个审查代理
@@ -39,25 +41,17 @@ python scripts/merge_reports.py --input-dir temp/001/ --output temp/001/final_re
 | Agent 4 (L2) | AI 执行 | 视频提示词结构、动态逻辑 |
 | Agent 5 (L2) | AI 执行 | 角色跨镜头一致性 |
 
-## 输出示例
+## 输出文件
 
-```
-## L2 审查结果：FAIL
-
-### Agent 1: L1 校验
-- 字数校验：PASS
-- 完整性校验：PASS - 覆盖率 92%
-
-### Agent 3: L2 绘图提示词逐行审查
-- 整体判定：FAIL
-- 总镜号数：10
-- 通过：7 | 失败：3
-
-### 给生成模型的反馈
-**镜号 3 - 角色人设 9 要素**：
-- 问题：缺少第 6 项：下装描述
-- 修正建议：补充下装描述，如'下着黑色长裤'
-```
+| 文件 | 说明 |
+|------|------|
+| `agent1_l1_result.json` | L1 校验结果 |
+| `agent2_l2_fast.json` | L2 快速筛选结果 |
+| `agent3_l2_drawing.json` | L2 绘图提示词审查结果 |
+| `agent4_l2_video.json` | L2 视频提示词审查结果 |
+| `agent5_l2_cross_row.json` | L2 跨行一致性检查结果 |
+| `final_review_report.txt` | 最终汇总审查报告 |
+| `feedback_for_model.txt` | 给生成模型的反馈（独立文件） |
 
 ## 目录结构
 

@@ -360,12 +360,29 @@ def main():
 
     args = parser.parse_args()
 
+    # 加载所有结果用于生成反馈
+    all_results = {
+        "l1": load_json_file(os.path.join(args.input_dir, "agent1_l1_result.json")),
+        "l2_fast": load_json_file(os.path.join(args.input_dir, "agent2_l2_fast.json")),
+        "l2_drawing": load_json_file(os.path.join(args.input_dir, "agent3_l2_drawing.json")),
+        "l2_video": load_json_file(os.path.join(args.input_dir, "agent4_l2_video.json")),
+        "l2_cross_row": load_json_file(os.path.join(args.input_dir, "agent5_l2_cross_row.json"))
+    }
+
     report = merge_reports(args.input_dir)
 
     with open(args.output, "w", encoding="utf-8") as f:
         f.write(report)
 
+    # 新增：自动在同一目录下保存反馈部分
+    output_dir = os.path.dirname(args.output)
+    feedback_path = os.path.join(output_dir, "feedback_for_model.txt")
+    feedback = generate_feedback(all_results)
+    with open(feedback_path, "w", encoding="utf-8") as f:
+        f.write(feedback)
+
     print(f"审查报告已生成：{args.output}")
+    print(f"反馈文件已生成：{feedback_path}")
 
 
 if __name__ == "__main__":

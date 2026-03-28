@@ -200,6 +200,7 @@ l1_rules:
 | `<filename>/agent4_l2_video.json` | L2 视频提示词审查结果 |
 | `<filename>/agent5_l2_cross_row.json` | L2 跨行一致性检查结果 |
 | `<filename>/final_review_report.txt` | 最终汇总审查报告 |
+| `<filename>/feedback_for_model.txt` | 给生成模型的反馈（单独文件） |
 
 ---
 
