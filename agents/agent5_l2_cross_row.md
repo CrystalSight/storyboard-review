@@ -99,6 +99,17 @@
 }
 ```
 
+## 输出约束（必须严格遵守）
+
+1. **输出文件必须是纯 JSON 格式**，不要使用 markdown 代码块包裹
+2. **不要输出任何解释、说明或额外文字**，只输出 JSON
+3. 在写入文件前，请自检确认：
+   - JSON 是否可被正确解析
+   - 所有必填字段是否存在（agent, passed, total_characters, findings）
+   - 布尔值使用 true/false 而非字符串
+   - findings 是数组，即使为空也要包含
+   - first_appearance 和 conflict_appearance 是对象类型
+
 ## 示例输出
 
 ```json

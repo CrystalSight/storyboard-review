@@ -15,11 +15,47 @@ import sys
 
 
 def load_json_file(path: str) -> dict:
-    """加载 JSON 文件，如果不存在则返回 None"""
+    """
+    加载 JSON 文件，如果不存在则返回 None。
+    具备容错能力：自动处理 markdown 代码块、多余空白等常见问题。
+    """
     if not os.path.exists(path):
         return None
+
     with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+        content = f.read()
+
+    # 尝试直接解析
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        pass
+
+    # 容错处理 1: 去除首尾空白
+    content = content.strip()
+
+    # 容错处理 2: 去除 markdown 代码块标记
+    if content.startswith("```json"):
+        content = content[7:]
+    elif content.startswith("```"):
+        content = content[3:]
+
+    if content.endswith("```"):
+        content = content[:-3]
+
+    content = content.strip()
+
+    # 容错处理 3: 尝试去除可能的多余逗号 (JSON 不允许尾随逗号)
+    # 处理 ], 和 }, 的情况
+    content = content.replace(",\n]", "\n]").replace(",\n}", "\n}")
+
+    # 再次尝试解析
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError as e:
+        print(f"警告：JSON 解析失败 ({path}): {e}")
+        print(f"文件内容预览：{content[:200]}...")
+        return None
 
 
 def format_l1_result(result: dict) -> str:
