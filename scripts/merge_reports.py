@@ -49,6 +49,12 @@ def load_json_file(path: str) -> dict:
     # 处理 ], 和 }, 的情况
     content = content.replace(",\n]", "\n]").replace(",\n}", "\n}")
 
+    # 容错处理 4: 中文引号预处理
+    # 将中文引号替换为单引号，避免破坏 JSON 字符串结构
+    # 单引号在 JSON 中不是定界符，可以安全使用，且语义清晰表示强调
+    content = content.replace(""", "'").replace(""", "'")
+    content = content.replace("'", "'").replace("'", "'")
+
     # 再次尝试解析
     try:
         return json.loads(content)
